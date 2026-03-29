@@ -22,4 +22,10 @@ router.patch('/:projectId', ProjectController.update);
 // DELETE /api/v1/projects/:projectId
 router.delete('/:projectId', ProjectController.delete);
 
+// POST /api/v1/projects/:projectId/labels
+router.post('/:projectId/labels', ProjectController.createLabel);
+
+// GET /api/v1/projects/:projectId/labels
+router.get('/:projectId/labels', ProjectController.getLabels);
+
 export default router;

@@ -70,4 +70,41 @@ export class ProjectController {
 
     res.status(200).json(response);
   });
+  static createLabel = asyncHandler(async (req: Request, res: Response) => {
+    const { name, color } = req.body;
+
+    if (!name) {
+      res.status(400).json({ success: false, message: 'Label name is required' });
+      return;
+    }
+
+    const label = await ProjectService.createLabel(
+      req.params.projectId,
+      name,
+      color || '#6B778C',
+      req.user!.id
+    );
+
+    const response: ApiResponse = {
+      success: true,
+      data: label,
+      message: 'Label created successfully',
+    };
+
+    res.status(201).json(response);
+  });
+
+  static getLabels = asyncHandler(async (req: Request, res: Response) => {
+    const labels = await ProjectService.getLabels(
+      req.params.projectId,
+      req.user!.id
+    );
+
+    const response: ApiResponse = {
+      success: true,
+      data: labels,
+    };
+
+    res.status(200).json(response);
+  });
 }

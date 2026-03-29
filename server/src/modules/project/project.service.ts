@@ -192,4 +192,63 @@ export class ProjectService {
 
     return { success: true };
   }
+
+  static async createLabel(projectId: string, name: string, color: string, userId: string) {
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      include: {
+        workspace: {
+          include: {
+            members: {
+              where: { userId },
+              select: { role: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!project) {
+      throw ApiError.notFound('Project not found');
+    }
+
+    const member = project.workspace.members[0];
+    if (!member || member.role === 'VIEWER') {
+      throw ApiError.forbidden('You do not have permission to create labels');
+    }
+
+    const label = await prisma.label.create({
+      data: { projectId, name, color },
+    });
+
+    return label;
+  }
+
+  static async getLabels(projectId: string, userId: string) {
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      include: {
+        workspace: {
+          include: {
+            members: { where: { userId }, select: { userId: true } },
+          },
+        },
+      },
+    });
+
+    if (!project) {
+      throw ApiError.notFound('Project not found');
+    }
+
+    if (project.workspace.members.length === 0) {
+      throw ApiError.forbidden('You do not have access to this project');
+    }
+
+    const labels = await prisma.label.findMany({
+      where: { projectId },
+      orderBy: { name: 'asc' },
+    });
+
+    return labels;
+  }
 }

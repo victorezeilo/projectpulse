@@ -12,6 +12,8 @@ import { prisma } from './config/database';
 import authRoutes from './modules/auth/auth.routes';
 import workspaceRoutes from './modules/workspace/workspace.routes';
 import projectRoutes from './modules/project/project.routes';
+import sprintRoutes from './modules/sprint/sprint.routes';
+import taskRoutes from './modules/task/task.routes';
 
 const app = express();
 
@@ -73,6 +75,8 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/v1/auth', authLimiter, authRoutes);
 app.use('/api/v1/workspaces', workspaceRoutes);
 app.use('/api/v1/projects', projectRoutes);
+app.use('/api/v1/sprints', sprintRoutes);
+app.use('/api/v1/tasks', taskRoutes);
 
 // 404 handler
 app.use((_req, res) => {
